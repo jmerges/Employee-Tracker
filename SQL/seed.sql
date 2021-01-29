@@ -17,32 +17,32 @@ VALUES ("John", "Doe", 1), ("Mike", "Chan", 2),
 
 UPDATE employee
 SET manager_id = 3
-WHERE id = 1;
+WHERE employee_id = 1;
 
 UPDATE employee
 SET manager_id = 1
-WHERE id = 2;
+WHERE employee_id = 2;
 
 UPDATE employee
 SET manager_id = null
-WHERE id = 3;
+WHERE employee_id = 3;
 
 UPDATE employee
 SET manager_id = 3
-WHERE id = 4;
+WHERE employee_id = 4;
 
 UPDATE employee
 SET manager_id = null
-WHERE id = 5;
+WHERE employee_id = 5;
 
 UPDATE employee
 SET manager_id = null
-WHERE id = 6;
+WHERE employee_id = 6;
 
 UPDATE employee
 SET manager_id = 6
-WHERE id = 7;
+WHERE employee_id = 7;
 
 UPDATE employee
 SET manager_id = 4
-WHERE id = 8;
+WHERE employee_id = 8;
