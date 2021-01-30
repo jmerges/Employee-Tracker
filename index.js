@@ -46,4 +46,81 @@ function view(table) {
     });
 }
 
+function addEmployee() {
+    // Need to construct the role list
+    var roleQuery = "SELECT role_id, title FROM role";
+    connection.query(roleQuery, function(err, roleRes) {
+        if (err) throw err;
+        var roleList = [];
+        roleRes.forEach(role => {
+            roleList.push(role.title);
+        });
+        roleList.push("null");
+        console.log(roleList);
+        console.log(roleRes);
+
+        empQuery = "SELECT employee_id, first_name, last_name FROM employee";
+        connection.query(empQuery, function(err, empRes) {
+            if (err) throw err;
+            var empList = [];
+            empRes.forEach(emp => {
+                var fullName = emp.first_name + " " + emp.last_name;
+                empList.push(fullName);
+            });
+            empList.push("null");
+            console.log(empList);
+            console.log(empRes);
+
+            // After we have both lists, we do inquirer
+            inquirer.prompt([{
+                type: "input",
+                message: "Enter employee's first name: ",
+                name: "firstName"
+            }, {
+                type: "input",
+                message: "Enter employee's last name: ",
+                name: "lastName"
+            }, {
+                type: "list",
+                message: "Choose employee's role",
+                name: "role",
+                choices: roleList
+            }, {
+                type: "list",
+                message: "Choose employee's manager",
+                name: "manager",
+                choices: empList
+            }]).then(empData => {
+                var roleId;
+                roleRes.forEach(role => {
+                    if (Object.values(role).includes(empData.role)) {
+                        roleId = role.role_id;
+                    }
+                    else {
+                        roleId = "null";
+                    }
+                });
+                var mgrName = empData.manager.split(" ");
+                var mgrId;
+                empRes.forEach(emp => {
+                    if (Object.values(emp).includes(mgrName[0]) && Object.values(emp).includes(mgrName[1])) {
+                        mgrId = emp.employee_id;
+                    }
+                    else {
+                        mgrId = "null";
+                    }
+                });
+                console.log(roleId);
+                var queryString = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${empData.firstName}', '${empData.lastName}', ${roleId}, ${mgrId})`;
+                connection.query(queryString, function(err, result) {
+                    if (err) throw err;
+                    view("employee");
+                });
+
+                });
+
+                });
+            });
+        };
+
 startMenu();
