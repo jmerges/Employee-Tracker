@@ -167,4 +167,62 @@ function addRole() {
     });
 }
 
+function updateEmployeeRole() {
+    var roleQuery = "SELECT role_id, title FROM role";
+    connection.query(roleQuery, function(err, roleRes) {
+        if (err) throw err;
+        var roleList = [];
+        roleRes.forEach(role => {
+            roleList.push(role.title);
+        });
+        roleList.push("null");
+        console.log(roleList);
+        console.log(roleRes);
+
+        empQuery = "SELECT employee_id, first_name, last_name FROM employee";
+        connection.query(empQuery, function(err, empRes) {
+            if (err) throw err;
+            var empList = [];
+            empRes.forEach(emp => {
+                var fullName = emp.first_name + " " + emp.last_name;
+                empList.push(fullName);
+            });
+            console.log(empList);
+            console.log(empRes);
+
+            inquirer.prompt([{
+                type: "list",
+                message: "Choose an employee to update",
+                name: "employee",
+                choices: empList
+            }, {
+                type: "list",
+                message: "Choose their new role",
+                name: "role",
+                choices: roleList
+            }]).then(answer => {
+                var roleId = "null";
+                roleRes.forEach(role => {
+                    if (Object.values(role).includes(answer.role)) {
+                        roleId = role.role_id;
+                    }
+                });
+                var empName = answer.employee.split(" ");
+                var empId = "null";
+                empRes.forEach(emp => {
+                    if (Object.values(emp).includes(empName[0]) && Object.values(emp).includes(empName[1])) {
+                        empId = emp.employee_id;
+                    }
+                });
+                console.log(roleId);
+                var queryString = `UPDATE employee SET role_id = ${roleId} WHERE first_name = '${empName[0]}' AND last_name = '${empName[1]}'`;
+                connection.query(queryString, function(err, result) {
+                    if (err) throw err;
+                    view("employee");
+                });
+            });
+        });
+    });
+}
+
 startMenu();
