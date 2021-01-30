@@ -47,7 +47,7 @@ function view(table) {
 }
 
 function addEmployee() {
-    // Need to construct the role list
+    // Need to construct the role list and employee list
     var roleQuery = "SELECT role_id, title FROM role";
     connection.query(roleQuery, function(err, roleRes) {
         if (err) throw err;
@@ -116,11 +116,64 @@ function addEmployee() {
                     if (err) throw err;
                     view("employee");
                 });
-
-                });
-
-                });
             });
-        };
+        });
+    });
+};
+
+function addDepartment() {
+    inquirer.prompt([{
+        type: "input",
+        name: "name",
+        message: "Enter the department name: "
+    }]).then(answer => {
+        var queryString = `INSERT INTO department (name) VALUES ('${answer.name}')`;
+        connection.query(queryString, function(err, result) {
+            if (err) throw err;
+            view("department");
+        });
+    });
+}
+
+function addRole() {
+    var depQuery = "SELECT department_id, name FROM department";
+    connection.query(depQuery, function(err, depRes) {
+        if (err) throw err;
+        var depList = [];
+        depRes.forEach(dep => {
+            depList.push(dep.name);
+        });
+        depList.push("null");
+        inquirer.prompt([{
+            type: "input",
+            name: "title",
+            message: "Enter the role title: "
+        }, {
+            type: "input",
+            name: "salary",
+            message: "Enter the role's salary: "
+        }, {
+            type: "list",
+            name: "department",
+            message: "Choose the department",
+            choices: depList
+        }]).then(answer => {
+            var depId;
+            depRes.forEach(dep => {
+                if (Object.values(dep).includes(answer.department)) {
+                    depId = dep.department_id;
+                }
+                else {
+                    depId = "null";
+                }
+            });
+            var queryString = `INSERT INTO role (title, salary, department_id) VALUES ('${answer.title}', ${answer.salary}, ${depId})`;
+            connection.query(queryString, function(err, result) {
+                if (err) throw err;
+                view("role");
+            });
+        });
+    });
+}
 
 startMenu();
