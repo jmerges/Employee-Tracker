@@ -1,12 +1,12 @@
 var inquirer = require("inquirer");
 var cTable = require("console.table");
-var connection = require("connection.js");
+var connection = require("./connection.js");
 const { listenerCount } = require("./connection");
 const { allowedNodeEnvironmentFlags } = require("process");
 
 function startMenu () {
     inquirer.prompt([{
-        type: list,
+        type: "list",
         message: "What would you like to do?",
         name: "action",
         choices: ["Add Employee", "Add Department", "Add Role", "View Employees", "View Departments", "View Roles", "Update an Employee's Role"]
@@ -22,13 +22,13 @@ function startMenu () {
                 addRole();
                 break;
             case "View Employees":
-                view("employees");
+                view("employee");
                 break;
             case "View Departments":
-                view("departments");
+                view("department");
                 break;
             case "View Roles":
-                view("roles");
+                view("role");
                 break;
             case "Update an Employee's Role":
                 updateEmployeeRole();
@@ -38,8 +38,12 @@ function startMenu () {
 }
 
 function view(table) {
-    switch (table) {
-        case "employees":
-            
-    }
+    var queryString = "SELECT * FROM "+table;
+    connection.query(queryString, function(err, result) {
+        if (err) throw err;
+        console.table(result);
+        startMenu();
+    });
 }
+
+startMenu();
