@@ -91,23 +91,17 @@ function addEmployee() {
                 name: "manager",
                 choices: empList
             }]).then(empData => {
-                var roleId;
+                var roleId = "null";
                 roleRes.forEach(role => {
                     if (Object.values(role).includes(empData.role)) {
                         roleId = role.role_id;
                     }
-                    else {
-                        roleId = "null";
-                    }
                 });
                 var mgrName = empData.manager.split(" ");
-                var mgrId;
+                var mgrId = "null";
                 empRes.forEach(emp => {
                     if (Object.values(emp).includes(mgrName[0]) && Object.values(emp).includes(mgrName[1])) {
                         mgrId = emp.employee_id;
-                    }
-                    else {
-                        mgrId = "null";
                     }
                 });
                 console.log(roleId);
@@ -158,13 +152,10 @@ function addRole() {
             message: "Choose the department",
             choices: depList
         }]).then(answer => {
-            var depId;
+            var depId = "null";
             depRes.forEach(dep => {
                 if (Object.values(dep).includes(answer.department)) {
                     depId = dep.department_id;
-                }
-                else {
-                    depId = "null";
                 }
             });
             var queryString = `INSERT INTO role (title, salary, department_id) VALUES ('${answer.title}', ${answer.salary}, ${depId})`;
